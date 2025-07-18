@@ -1,0 +1,10 @@
+# Python Cache
+/__pycache__
+
+# Output directory
+/output
+
+# Secrets
+*.env
+credentials.*
+token.*
