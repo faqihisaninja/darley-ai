@@ -1,6 +1,6 @@
-from gmail_auth import gmail_authenticate
-from email_fetcher import get_latest_emails
-from email_summariser import summarise_email
+from emails.gmail_auth import gmail_authenticate
+from emails.email_fetcher import get_latest_emails
+from emails.email_summariser import summarise_email
 import json
 import os
 
