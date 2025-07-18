@@ -1,5 +1,14 @@
-# Python Cache
-/__pycache__
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Mac-specific
+.DS_Store
+
+# VSCode and PyCharm
+.vscode/
+.idea/
 
 # Output directory
 /output
