@@ -1,14 +1,15 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.runnables import RunnableSequence
 
 from config import GOOGLE_STUDIO_API_KEY
 
-llm = ChatGoogleGenerativeAI(
+llm: ChatGoogleGenerativeAI = ChatGoogleGenerativeAI(
     model="models/gemma-3-27b-it", google_api_key=GOOGLE_STUDIO_API_KEY
 )
 
-prompt = PromptTemplate(
+prompt: PromptTemplate = PromptTemplate(
     input_variables=["text"],
     template="""
         Please provide a concise summary of the following email content:
@@ -27,8 +28,8 @@ prompt = PromptTemplate(
     """,
 )
 
-chain = prompt | llm | StrOutputParser()
+chain: RunnableSequence = prompt | llm | StrOutputParser()
 
 
-def summarise_email(email_body: str):
+def summarise_email(email_body: str) -> str:
     return chain.invoke({"text": email_body})

@@ -3,19 +3,21 @@ from emails.email_fetcher import get_latest_emails
 from emails.email_summariser import summarise_email
 import json
 import os
+from typing import List, Dict, Any
+from googleapiclient.discovery import Resource
 
 
-def main():
-    service = gmail_authenticate()
-    emails = get_latest_emails(service)
+def main() -> None:
+    service: Resource = gmail_authenticate()
+    emails: List[Dict[str, str]] = get_latest_emails(service)
 
     os.makedirs("output", exist_ok=True)
     with open("output/raw_emails.json", "w") as f:
         json.dump(emails, f, indent=4)
 
-    summaries = []
+    summaries: List[Dict[str, str]] = []
     for email in emails:
-        summary = summarise_email(email["body"])
+        summary: str = summarise_email(email["body"])
         summaries.append({"subject": email["subject"], "summary": summary})
 
     with open("output/summaries.json", "w") as f:
