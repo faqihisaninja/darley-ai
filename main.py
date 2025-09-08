@@ -1,6 +1,7 @@
-from emails.gmail_auth import gmail_authenticate
-from emails.email_fetcher import get_latest_emails
-from emails.email_summariser import summarise_email
+from calendar_utils.google_calendar import GoogleCalendarProvider
+from email_utils.gmail_auth import gmail_authenticate
+from email_utils.email_fetcher import get_latest_emails
+from email_utils.email_summariser import summarise_email
 import json
 import os
 from typing import List, Dict, Any
@@ -8,6 +9,12 @@ from googleapiclient.discovery import Resource
 
 
 def main() -> None:
+    calendar = GoogleCalendarProvider()
+    calendar.authenticate()
+    events = calendar.get_upcoming_events(48)
+    for e in events:
+        print(e["summary"], e["start"].get("dateTime"))
+
     service: Resource = gmail_authenticate()
     emails: List[Dict[str, str]] = get_latest_emails(service)
 
