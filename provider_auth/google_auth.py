@@ -77,20 +77,3 @@ class GoogleAuthManager:
     def is_authenticated(self) -> bool:
         """Check if the manager is authenticated."""
         return self.creds is not None and self.creds.valid
-
-
-# Pre-configured auth managers for common services
-def create_gmail_auth_manager(
-    token_path: str = "token.json", creds_path: str = "credentials.json"
-) -> GoogleAuthManager:
-    """Create a pre-configured Gmail authentication manager."""
-    scopes = ["https://www.googleapis.com/auth/gmail.readonly"]
-    return GoogleAuthManager(scopes, token_path, creds_path)
-
-
-def create_calendar_auth_manager(
-    token_path: str = "token.json", creds_path: str = "credentials.json"
-) -> GoogleAuthManager:
-    """Create a pre-configured Google Calendar authentication manager."""
-    scopes = ["https://www.googleapis.com/auth/calendar.readonly"]
-    return GoogleAuthManager(scopes, token_path, creds_path)
