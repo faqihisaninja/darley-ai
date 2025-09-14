@@ -10,6 +10,7 @@ google-api-python-client==2.176.0
 google-auth==2.40.3
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.2
+google-genai==1.36.0
 googleapis-common-protos==1.70.0
 grpcio==1.73.1
 grpcio-status==1.73.1
@@ -20,11 +21,6 @@ httpx==0.28.1
 idna==3.10
 jsonpatch==1.33
 jsonpointer==3.0.0
-langchain==0.3.26
-langchain-core==0.3.69
-langchain-google-genai==2.1.8
-langchain-text-splitters==0.3.8
-langsmith==0.4.7
 oauthlib==3.3.1
 orjson==3.11.0
 packaging==25.0
@@ -36,6 +32,7 @@ pydantic==2.11.7
 pydantic_core==2.33.2
 pyparsing==3.2.3
 python-dotenv==1.1.1
+pytz==2025.2
 PyYAML==6.0.2
 requests==2.32.4
 requests-oauthlib==2.0.0
@@ -48,4 +45,5 @@ typing-inspection==0.4.1
 typing_extensions==4.14.1
 uritemplate==4.2.0
 urllib3==2.5.0
+websockets==15.0.1
 zstandard==0.23.0
