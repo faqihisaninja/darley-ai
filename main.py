@@ -1,53 +1,103 @@
-from calendar_utils.google_calendar import GoogleCalendarProvider, get_upcoming_events
-from email_utils.gmail_auth import gmail_authenticate
-from email_utils.email_fetcher import get_latest_emails
-from email_utils.email_summariser import summarise_email
-import json
+# main.py
 import os
-from typing import List, Dict, Any
-from googleapiclient.discovery import Resource
+import json
+from datetime import datetime
+from agent import AIAgent
 from provider_auth.google_auth import GoogleAuthManager
 
 
-def main() -> None:
-    # calendar = GoogleCalendarProvider()
-    # calendar.authenticate()
-    # events = calendar.get_upcoming_events(48)
-    # for e in events:
-    #     print(e["summary"], e["start"].get("dateTime"))
+class ChatApp:
+    """Main chat application with persistent memory"""
 
-    # service: Resource = gmail_authenticate()
-    # emails: List[Dict[str, str]] = get_latest_emails(service)
+    def __init__(self):
+        self.history_file = "chat_history.json"
+        self.conversation_history = self.load_history()
+        self.setup_services()
 
-    # os.makedirs("output", exist_ok=True)
-    # with open("output/raw_emails.json", "w") as f:
-    #     json.dump(emails, f, indent=4)
+    def setup_services(self):
+        """Initialize Google services and AI agent"""
+        # API key
+        api_key = os.getenv("GOOGLE_STUDIO_API_KEY")
+        if not api_key:
+            raise ValueError("GOOGLE_STUDIO_API_KEY not found")
 
-    # summaries: List[Dict[str, str]] = []
-    # for email in emails:
-    #     summary: str = summarise_email(email["body"])
-    #     summaries.append({"subject": email["subject"], "summary": summary})
+        # Google auth
+        scopes = [
+            "https://www.googleapis.com/auth/gmail.readonly",
+            "https://www.googleapis.com/auth/calendar.readonly",
+        ]
 
-    # with open("output/summaries.json", "w") as f:
-    #     json.dump(summaries, f, indent=4)
+        auth_manager = GoogleAuthManager(scopes=scopes)
+        gmail_service = auth_manager.authenticate("gmail", "v1")
+        calendar_service = auth_manager.authenticate("calendar", "v3")
 
-    # print("✅ Summarization complete. Check output/summaries.json")
-    custom_scopes = [
-        "https://www.googleapis.com/auth/gmail.readonly",
-        "https://www.googleapis.com/auth/calendar.readonly",
-    ]
+        # AI Agent
+        self.agent = AIAgent(api_key, gmail_service, calendar_service)
 
-    auth_manager = GoogleAuthManager(
-        scopes=custom_scopes,
-        token_path="token.json",
-        creds_path="credentials.json",
-    )
-    gmail_service = auth_manager.authenticate("gmail", "v1")
-    calendar_service = auth_manager.authenticate("calendar", "v3")
-    events = get_upcoming_events(calendar_service)
-    for e in events:
-        print(e["summary"], e["start"].get("dateTime"))
+    def load_history(self):
+        """Load chat history from file"""
+        try:
+            if os.path.exists(self.history_file):
+                with open(self.history_file, "r") as f:
+                    return json.load(f)
+        except:
+            pass
+        return []
+
+    def save_history(self):
+        """Save chat history to file"""
+        try:
+            with open(self.history_file, "w") as f:
+                json.dump(self.conversation_history, f, indent=2)
+        except Exception as e:
+            print(f"Failed to save history: {e}")
+
+    def run(self):
+        """Main chat loop"""
+        print("🤖 AI Assistant ready! (with persistent memory)")
+        print("Type 'quit' to exit, 'clear' to clear history\n")
+
+        while True:
+            try:
+                user_input = input("💬 You: ").strip()
+
+                if user_input.lower() == "quit":
+                    self.save_history()
+                    print("👋 Goodbye!")
+                    break
+
+                if user_input.lower() == "clear":
+                    self.conversation_history = []
+                    self.save_history()
+                    print("🗑️ History cleared!")
+                    continue
+
+                if not user_input:
+                    continue
+
+                # Get AI response
+                response = self.agent.chat(user_input, self.conversation_history)
+
+                # Update history
+                self.conversation_history.append(
+                    {"role": "user", "content": user_input}
+                )
+                self.conversation_history.append(
+                    {"role": "assistant", "content": response}
+                )
+
+                # Keep history manageable
+                if len(self.conversation_history) > 20:
+                    self.conversation_history = self.conversation_history[-20:]
+
+                print(f"🤖 Assistant: {response}\n")
+
+            except KeyboardInterrupt:
+                self.save_history()
+                print("\n👋 Goodbye!")
+                break
 
 
 if __name__ == "__main__":
-    main()
+    app = ChatApp()
+    app.run()
