@@ -21,6 +21,8 @@ def get_latest_emails(service: Resource, max_results: int = 5) -> List[Dict[str,
             payload: Dict[str, Any] = txt["payload"]
             headers: List[Dict[str, str]] = payload["headers"]
             subject: str = next(h["value"] for h in headers if h["name"] == "Subject")
+            sender = next(h["value"] for h in headers if h["name"] == "From")
+            date = next(h["value"] for h in headers if h["name"] == "Date")
             parts: List[Dict[str, Any]] = payload.get("parts", [])
             data: str = ""
 
@@ -32,7 +34,14 @@ def get_latest_emails(service: Resource, max_results: int = 5) -> List[Dict[str,
                 data = payload["body"]["data"]
 
             decoded_body: str = base64.urlsafe_b64decode(data).decode("utf-8")
-            emails.append({"subject": subject, "body": decoded_body})
+            emails.append(
+                {
+                    "sender": sender,
+                    "date": date,
+                    "subject": subject,
+                    "body": decoded_body,
+                }
+            )
 
         except Exception as e:
             print("Error reading message:", e)
