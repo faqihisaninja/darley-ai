@@ -17,3 +17,6 @@ __pycache__/
 *.env
 credentials.*
 token.*
+
+# Chat history
+chat_history.json
