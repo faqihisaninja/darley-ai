@@ -26,7 +26,7 @@ class ToolExecutor:
             return get_emails_tool(self.gmail_service, max_results)
 
         elif function_name == "get_calendar":
-            days_ahead = arguments.get("days_ahead", 1)
+            days_ahead = arguments.get("days_ahead", 7)
             return get_calendar_tool(self.calendar_service, days_ahead)
 
         elif function_name == "summarize_email":
